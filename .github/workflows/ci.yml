@@ -1,0 +1,101 @@
+# Runs on every pull request and on every push to main. The job names below are the required status
+# checks in .github/rulesets/main.json: rename a job there too, or merges to main stay blocked.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# A newer push to the same branch or PR cancels the run still in progress.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+
+      # Reads the pnpm version from "packageManager" in package.json.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      # Also runs `prisma generate` (postinstall in apps/api), which needs no database.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      # API route tests use stubs (createApp takes its dependencies), so no database is needed.
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+        env:
+          VITE_API_URL: http://localhost:4000
+
+  migrations:
+    name: Prisma migrations
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: reclo
+          POSTGRES_PASSWORD: reclo
+          POSTGRES_DB: reclo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U reclo -d reclo"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # Throwaway CI database; these are not real credentials.
+      DATABASE_URL: postgresql://reclo:reclo@localhost:5432/reclo?schema=public
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Every committed migration applies cleanly to an empty database.
+      - name: Apply migrations
+        working-directory: apps/api
+        run: pnpm exec prisma migrate deploy --config prisma7.config.ts
+
+      # Fails if schema.prisma was changed without running `pnpm db:migrate` to add a migration.
+      - name: Check schema matches migrations
+        working-directory: apps/api
+        run: >-
+          pnpm exec prisma migrate diff
+          --config prisma7.config.ts
+          --from-config-datasource
+          --to-schema prisma/schema.prisma
+          --exit-code
