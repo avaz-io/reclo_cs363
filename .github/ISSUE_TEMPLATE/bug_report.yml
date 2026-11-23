@@ -1,0 +1,92 @@
+name: Bug report
+description: Something in Reclo is not working as it should
+title: '[Bug]: '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Do not paste passwords, tokens or the contents of `.env` files.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the app is affected?
+      options:
+        - Web (frontend)
+        - API (backend)
+        - Shared schemas (packages/shared)
+        - Database / migrations
+        - CI / tooling
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you saw, including any error message.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Sign in as a client
+        2. Open a placement on the map
+        3. Click ...
+        4. See error
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: Signed in as
+      options:
+        - Not signed in
+        - Client
+        - Vendor
+        - Admin
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Low (cosmetic, has a workaround)
+        - Medium (a feature works only partly)
+        - High (a feature is broken, no workaround)
+        - Critical (data loss, security, or the app is down)
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and OS
+      placeholder: e.g. Chrome 140 on Windows 11
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Browser console output, API logs, or screenshots. Logs are formatted as code.
+      render: shell
+  - type: input
+    id: jira
+    attributes:
+      label: Jira issue
+      description: The Jira key, if this bug is tracked there.
+      placeholder: KAN-123
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched the existing issues and this is not a duplicate.
+          required: true
+        - label: I can reproduce this on the latest `main`.
