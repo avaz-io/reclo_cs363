@@ -69,7 +69,8 @@ export async function deletePlacementPhoto(id: string, photoUrl: string) {
 /** The listing's price matrix, or null before the vendor has set one (KAN-11). */
 export async function fetchVendorPlacementPricing(id: string): Promise<PlacementPricing | null> {
   const response = await request(`${BASE}/${id}/pricing`, { method: 'GET' })
-  return z.object({ pricing: placementPricingSchema.nullable() }).parse(await response.json()).pricing
+  return z.object({ pricing: placementPricingSchema.nullable() }).parse(await response.json())
+    .pricing
 }
 
 export async function saveVendorPlacementPricing(

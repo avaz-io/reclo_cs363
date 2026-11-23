@@ -23,10 +23,10 @@ vendors. This is a read-only view over the existing `Inquiry` model; no new tabl
 
 Both behind `requireAuth` + `requireRole('ADMIN')` (401 / 403 otherwise).
 
-| Route                          | Query / params                                    | Response                            |
-| ------------------------------ | ------------------------------------------------- | ----------------------------------- |
-| `GET /api/admin/inquiries`     | `clientQuery`, `status`, `from`, `to`, `page`     | `AdminInquiryListResponse`          |
-| `GET /api/admin/inquiries/:id` | `id` (uuid; malformed or unknown → 404)           | `AdminInquiryDetailResponse`        |
+| Route                          | Query / params                                | Response                     |
+| ------------------------------ | --------------------------------------------- | ---------------------------- |
+| `GET /api/admin/inquiries`     | `clientQuery`, `status`, `from`, `to`, `page` | `AdminInquiryListResponse`   |
+| `GET /api/admin/inquiries/:id` | `id` (uuid; malformed or unknown → 404)       | `AdminInquiryDetailResponse` |
 
 Errors: `400 INVALID_QUERY`, `404 INQUIRY_NOT_FOUND`. Schemas live in
 `packages/shared/src/admin-inquiry.ts`.
