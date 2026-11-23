@@ -1,0 +1,65 @@
+name: Feature / task
+description: A new feature, or a Jira parent task mirrored on GitHub
+title: 'KAN-<number>: '
+labels: ['enhancement']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        GitHub mirrors the Jira **parent task**, not each subtask. Subtask PRs reference this issue
+        with `Part of #<number>`, and the PR for the last subtask uses `Closes #<number>`.
+  - type: input
+    id: jira
+    attributes:
+      label: Jira parent task
+      description: Leave empty if this is a new idea that is not in Jira yet.
+      placeholder: KAN-123
+  - type: textarea
+    id: story
+    attributes:
+      label: User story
+      description: Who wants this, and why?
+      placeholder: As a client, I want to ... so that ...
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: How we know it is done.
+      placeholder: |
+        - [ ] A client can ...
+        - [ ] An admin sees ...
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Areas affected
+      multiple: true
+      options:
+        - Web (frontend)
+        - API (backend)
+        - Shared schemas (packages/shared)
+        - Database / migrations
+        - CI / tooling
+  - type: textarea
+    id: subtasks
+    attributes:
+      label: Jira subtasks
+      description: One branch per subtask, named `KAN-<number>-short-description`.
+      placeholder: |
+        - [ ] KAN-124 Design
+        - [ ] KAN-125 Backend
+        - [ ] KAN-126 Frontend
+        - [ ] KAN-127 Testing
+  - type: input
+    id: design-doc
+    attributes:
+      label: Design doc
+      placeholder: docs/<feature>-design.md
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes and alternatives
+      description: Open questions, options considered, links.

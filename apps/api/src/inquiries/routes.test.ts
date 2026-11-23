@@ -48,6 +48,8 @@ function setup(storeOverride: Partial<InquiryStore> = {}) {
     checkDatabase: async () => {},
     authStore: memory.store,
     inquiryStore: store,
+    // A fixed clock, so the dates in these tests stay inside (or outside) the 14-day window.
+    now: () => new Date('2026-10-26T10:00:00.000Z'),
   })
   // `memory` is spread first: it also has a `store`, which is the auth one.
   return { app, ...memory, store }

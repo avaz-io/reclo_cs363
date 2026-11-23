@@ -20,7 +20,7 @@ import { createMemoryAuthStore } from './test-helpers'
  */
 
 type Role = 'CLIENT' | 'VENDOR' | 'ADMIN'
-type Method = 'post' | 'patch' | 'delete'
+type Method = 'post' | 'put' | 'patch' | 'delete'
 
 interface WriteRoute {
   method: Method
@@ -93,6 +93,16 @@ const WRITE_ROUTES: WriteRoute[] = [
   { method: 'post', pattern: '/api/vendor/placements/:id/restore', body: 'none', role: 'VENDOR' },
   { method: 'post', pattern: '/api/vendor/placements/:id/pause', body: 'none', role: 'VENDOR' },
   { method: 'post', pattern: '/api/vendor/placements/:id/resume', body: 'none', role: 'VENDOR' },
+  {
+    method: 'put',
+    pattern: '/api/vendor/placements/:id/pricing',
+    body: 'json',
+    role: 'VENDOR',
+    valid: {
+      matrix: { terms: [1, 3], durations: [15], prices: [[100_000_00], [270_000_00]] },
+      vat: { vatEnabled: true, vatRate: 1200 },
+    },
+  },
   {
     method: 'post',
     pattern: '/api/vendor/placements/:id/photos',

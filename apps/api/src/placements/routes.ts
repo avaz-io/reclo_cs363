@@ -1,8 +1,4 @@
-import {
-  type ApiError,
-  mapBoundsQuerySchema,
-  type MapMarkersResponse,
-} from '@reclo/shared'
+import { type ApiError, mapBoundsQuerySchema, type MapMarkersResponse } from '@reclo/shared'
 import { Router } from 'express'
 import { z } from 'zod'
 import type { PlacementDetailWithPricing, PlacementStore } from './store'

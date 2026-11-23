@@ -20,8 +20,7 @@ export type MutationResult =
 
 /** `pricing` is null until the vendor saves a price list. */
 export type GetPricingResult =
-  | { kind: 'ok'; pricing: PlacementPricing | null }
-  | { kind: 'not_found' }
+  { kind: 'ok'; pricing: PlacementPricing | null } | { kind: 'not_found' }
 export type SavePricingResult =
   | { kind: 'ok'; pricing: PlacementPricing }
   | { kind: 'not_found' }
