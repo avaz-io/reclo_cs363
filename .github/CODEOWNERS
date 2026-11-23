@@ -1,0 +1,111 @@
+From 656ea6db84c6a674d6316590c72a5f8532013713 Mon Sep 17 00:00:00 2001
+From: avaz-io <asoibnazarov2005@gmail.com>
+Date: Mon, 23 Nov 2026 17:01:46 +0500
+Subject: [PATCH] Add CODEOWNERS and require code owner review on main
+
+---
+ .github/CODEOWNERS         | 36 ++++++++++++++++++++++++++++++++++++
+ .github/rulesets/main.json |  2 +-
+ docs/ci.md                 | 27 +++++++++++++++++++++++++--
+ 3 files changed, 62 insertions(+), 3 deletions(-)
+ create mode 100644 .github/CODEOWNERS
+
+diff --git a/.github/CODEOWNERS b/.github/CODEOWNERS
+new file mode 100644
+index 0000000..e8f50a2
+--- /dev/null
++++ b/.github/CODEOWNERS
+@@ -0,0 +1,36 @@
++# Code owners for Reclo.
++#
++# GitHub asks the owners of every file a pull request changes for a review, and the ruleset for
++# `main` (.github/rulesets/main.json) requires a code owner to approve before the merge.
++#
++# - The LAST matching pattern wins, so general patterns come first and specific ones after.
++# - Every owner needs write access to the repository, or GitHub ignores that owner.
++# - Every path has two owners: an author cannot approve their own pull request, so a path with
++#   one owner would block that owner's own changes.
++# - GitHub reads this file from the base branch of a pull request, so it takes effect once it is
++#   on `main`.
++
++# Default owners for anything not matched below.
++*                         @avaz-io @BahadurNUU
++
++# Backend (Express + Prisma)
++/apps/api/                @BahadurNUU @nozimjonfribble
++/apps/api/prisma/         @nozimjonfribble @dilnuraliqulov
++/apps/api/src/email/      @AlijonTursunboyev @BahadurNUU
++
++# Frontend (React + shadcn/ui)
++/apps/web/                @BahadurNUU @dilnuraliqulov
++/apps/web/src/i18n/       @dilnuraliqulov @nozimjonfribble
++
++# Zod schemas shared by web and api
++/packages/shared/         @BahadurNUU @dilnuraliqulov
++
++# Design docs
++/docs/                    @BahadurNUU @nozimjonfribble
++
++# CI, rulesets, templates and local infrastructure
++/.github/                 @avaz-io @BahadurNUU
++/docs/ci.md               @avaz-io @BahadurNUU
++/docker-compose.yml       @avaz-io @BahadurNUU
++/pnpm-workspace.yaml      @avaz-io @BahadurNUU
++/.nvmrc                   @avaz-io @BahadurNUU
+diff --git a/.github/rulesets/main.json b/.github/rulesets/main.json
+index c0f949f..688ce4f 100644
+--- a/.github/rulesets/main.json
++++ b/.github/rulesets/main.json
+@@ -17,7 +17,7 @@
+       "parameters": {
+         "required_approving_review_count": 1,
+         "dismiss_stale_reviews_on_push": true,
+-        "require_code_owner_review": false,
++        "require_code_owner_review": true,
+         "require_last_push_approval": false,
+         "required_review_thread_resolution": true,
+         "allowed_merge_methods": ["squash", "merge"]
+diff --git a/docs/ci.md b/docs/ci.md
+index 211ec39..1975a58 100644
+--- a/docs/ci.md
++++ b/docs/ci.md
+@@ -17,12 +17,35 @@ versions as local development. A newer push to the same branch cancels the run i
+ 
+ A repository ruleset for the default branch (`main`):
+ 
+-- Changes go in through a pull request with 1 approval. A new push dismisses earlier approvals, and
+-  every review thread must be resolved.
++- Changes go in through a pull request with 1 approval, and that approval must come from a code
++  owner of the changed files (see below). A new push dismisses earlier approvals, and every review
++  thread must be resolved.
+ - Both CI jobs must pass, on a branch that is up to date with `main`.
+ - No force pushes and no deleting `main`.
+ - Squash and merge commits are allowed. Nobody can bypass the rules, admins included.
+ 
++## Code owners (`.github/CODEOWNERS`)
++
++Each area of the repository has two owners. GitHub requests their review automatically when a pull
++request changes their files, and the ruleset requires one of them to approve. A pull request that
++changes several areas, such as `development` into `main`, needs an approval from an owner of each.
++
++| Area                                       | Owners                            |
++| ------------------------------------------ | --------------------------------- |
++| Everything not listed below                | @avaz-io, @BahadurNUU             |
++| `apps/api`                                 | @BahadurNUU, @nozimjonfribble     |
++| `apps/api/prisma` (schema and migrations)  | @nozimjonfribble, @dilnuraliqulov |
++| `apps/api/src/email`                       | @AlijonTursunboyev, @BahadurNUU   |
++| `apps/web`                                 | @BahadurNUU, @dilnuraliqulov      |
++| `apps/web/src/i18n` (en, uz, ru)           | @dilnuraliqulov, @nozimjonfribble |
++| `packages/shared`                          | @BahadurNUU, @dilnuraliqulov      |
++| `docs`                                     | @BahadurNUU, @nozimjonfribble     |
++| `.github`, `docs/ci.md`, Docker, toolchain | @avaz-io, @BahadurNUU             |
++
++Owners need write access to the repository (Settings → Collaborators). GitHub reads `CODEOWNERS`
++from the base branch of a pull request, so changes to it apply once they are merged into `main`.
++Open the file on GitHub to see any line it could not read.
++
+ ### Turning it on
+ 
+ The ruleset JSON does nothing until it is imported. It needs admin access to the repository.
+-- 
+2.43.0
